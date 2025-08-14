@@ -1,0 +1,35 @@
+name: Name File Workflow
+
+on:
+  workflow_dispatch:   # Manual trigger
+  push:
+    branches:
+      - main
+
+jobs:
+  create-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run Python script to create file
+        run: python3 create_name_file.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: name-file
+          path: name-file.txt
+
+  display-file:
+    runs-on: ubuntu-latest
+    needs: create-file
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: name-file
+
+      - name: Display file content
+        run: cat name-file.txt
