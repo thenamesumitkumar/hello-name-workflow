@@ -1,0 +1,28 @@
+name: Name Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      NAME_VARIABLE:
+        description: 'Enter your name'
+        required: true
+
+jobs:
+  create-file:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Your name is ${{ github.event.inputs.NAME_VARIABLE }}" > name.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: name-file
+          path: name.txt
+
+  display-file:
+    runs-on: ubuntu-latest
+    needs: create-file
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: name-file
+      - run: echo "$(cat name.txt)"
